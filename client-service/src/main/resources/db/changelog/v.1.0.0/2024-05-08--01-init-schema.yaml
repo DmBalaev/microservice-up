@@ -1,0 +1,245 @@
+databaseChangeLog:
+  - changeSet:
+      id: 2024-06-07-create-client-table
+      author: dm
+      changes:
+        - createTable:
+            tableName: client
+            columns:
+              - column:
+                  name: client_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: first_name
+                  type: varchar(255)
+              - column:
+                  name: last_name
+                  type: varchar(255)
+              - column:
+                  name: middle_name
+                  type: varchar(255)
+              - column:
+                  name: phone_number
+                  type: varchar(255)
+              - column:
+                  name: email
+                  type: varchar(255)
+              - column:
+                  name: passport_number
+                  type: varchar(255)
+
+
+  - changeSet:
+      id: 2024-06-07-create-passport-data-table
+      author: dm
+      changes:
+        - createTable:
+            tableName: passport_data
+            columns:
+              - column:
+                  name: passport_number
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: birthdate
+                  type: date
+              - column:
+                  name: client_id
+                  type: UUID
+
+
+  - changeSet:
+      id: 2024-06-07-create-policy-table
+      author: dm
+      changes:
+        - createTable:
+            tableName: policy
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: client_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: policy_number
+                  type: varchar(255)
+              - column:
+                  name: type
+                  type: varchar(255)
+              - column:
+                  name: start_date
+                  type: date
+              - column:
+                  name: end_date
+                  type: date
+              - column:
+                  name: premium_amount
+                  type: bigint
+              - column:
+                  name: coverage_details
+                  type: text
+  - changeSet:
+      id: 2024-06-07-create-claim-table
+      author: dm
+      changes:
+        - createTable:
+            tableName: claim
+            columns:
+              - column:
+                  name: claim_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: policy_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: claim_date
+                  type: date
+              - column:
+                  name: claim_amount
+                  type: bigint
+              - column:
+                  name: claim_status
+                  type: varchar(255)
+              - column:
+                  name: description
+                  type: text
+  - changeSet:
+      id: 2024-06-07-create-payment-table
+      author: dm
+      changes:
+        - createTable:
+            tableName: payment
+            columns:
+              - column:
+                  name: payment_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: policy_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: payment_date
+                  type: date
+              - column:
+                  name: payment_amount
+                  type: bigint
+              - column:
+                  name: payment_method
+                  type: varchar(255)
+  - changeSet:
+      id: 2024-06-07-create-document-table
+      author: dm
+      changes:
+        - createTable:
+            tableName: document
+            columns:
+              - column:
+                  name: document_id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: claim_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: document_url
+                  type: text
+              - column:
+                  name: document_type
+                  type: varchar(255)
+  - changeSet:
+      id: 2024-06-07-create-risk-assessment-table
+      author: dm
+      changes:
+        - createTable:
+            tableName: risk_assessment
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: client_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: assessment_date
+                  type: date
+              - column:
+                  name: risk_score
+                  type: bigint
+              - column:
+                  name: assessment_details
+                  type: text
+
+  - changeSet:
+      id: 2024-06-07-add-foreign-keys
+      author: dm
+      changes:
+        - addForeignKeyConstraint:
+            baseColumnNames: client_id
+            baseTableName: passport_data
+            constraintName: fk_client_id_passport_data
+            referencedColumnNames: client_id
+            referencedTableName: client
+
+        - addForeignKeyConstraint:
+            baseColumnNames: passport_number
+            baseTableName: client
+            constraintName: fk_client_id_passport_data2
+            referencedColumnNames: passport_number
+            referencedTableName: passport_data
+
+        - addForeignKeyConstraint:
+            baseColumnNames: client_id
+            baseTableName: policy
+            constraintName: fk_client_id_policy
+            referencedColumnNames: client_id
+            referencedTableName: client
+
+        - addForeignKeyConstraint:
+            baseColumnNames: policy_id
+            baseTableName: claim
+            constraintName: fk_policy_id_claim
+            referencedColumnNames: id
+            referencedTableName: policy
+
+        - addForeignKeyConstraint:
+            baseColumnNames: policy_id
+            baseTableName: payment
+            constraintName: fk_policy_id_payment
+            referencedColumnNames: id
+            referencedTableName: policy
+
+        - addForeignKeyConstraint:
+            baseColumnNames: claim_id
+            baseTableName: document
+            constraintName: fk_claim_id_document
+            referencedColumnNames: claim_id
+            referencedTableName: claim
+
+        - addForeignKeyConstraint:
+            baseColumnNames: client_id
+            baseTableName: risk_assessment
+            constraintName: fk_client_id_risk_assessment
+            referencedColumnNames: client_id
+            referencedTableName: client
