@@ -1,0 +1,5 @@
+spring:
+  application:
+    name: ${APPLICATION_NAME:client-service}
+  profiles:
+    active: dev
